@@ -1,0 +1,48 @@
+-- Here we require our card type constants (CardType.ttslua), so we can use them in this file.
+local CardType = require('ge_tts_demo/CardType')
+
+--
+-- This is example Card data type. We're using a @shape which means it's just a plain
+-- old table that we expect to have certain fields; you don't need to call a constructor
+-- to create one, any table that matches the "shape" is a Card.
+--
+
+---@shape Card
+---@field name string @A string representing the name of the card
+---@field type CardType @What type of card this is (game specific)
+---@field imageUrl string @The card face image URL.
+---
+
+-- This is our game's card library, we could just as easily download this data from the Internet,
+-- but to keep this demo simple, we're just embedding it here.
+
+---@type Card[]
+local Cards = {
+    {
+        name = 'Slap',
+        type = CardType.INSTANT,
+        imageUrl = 'https://raw.githubusercontent.com/Benjamin-Dobell/ge_tts_demo/master/images/slap.png',
+    },
+    {
+        name = 'Give Up',
+        type = CardType.INSTANT,
+        imageUrl = 'https://raw.githubusercontent.com/Benjamin-Dobell/ge_tts_demo/master/images/give_up.png',
+    },
+    {
+        name = 'Hocus Pocus',
+        type = CardType.SPELL,
+        imageUrl = 'https://raw.githubusercontent.com/Benjamin-Dobell/ge_tts_demo/master/images/hocus_pocus.png',
+    },
+    {
+        name = 'Pull a Rabbit Out of a Hat',
+        type = CardType.SPELL,
+        imageUrl = 'https://raw.githubusercontent.com/Benjamin-Dobell/ge_tts_demo/master/images/pull_a_rabbit.png',
+    },
+    {
+        name = 'Supercalifragilisticexpialidocious',
+        type = CardType.SPELL,
+        imageUrl = 'https://raw.githubusercontent.com/Benjamin-Dobell/ge_tts_demo/master/images/super.png',
+    },
+}
+
+return Cards

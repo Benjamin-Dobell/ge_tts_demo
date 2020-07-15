@@ -1,0 +1,69 @@
+local Object = require('ge_tts/Object') -- ge_tts provides useful TTS constants
+local ObjectUtils = require('ge_tts/ObjectUtils') -- ... and some utilities
+
+-- We're going to be creating TTS (custom) card objects at runtime for each card in our card library.
+-- To do this we need to create a special representation of TTS card object that TTS knows how to
+-- spawn.
+
+-- Traditionally, TTS expects you to use deck assets, multiple card images in one larger card,
+-- sheet. However, you don't need to do this (many mods don't), so to keep things simple we're
+-- just going to have one image per card (imageUrl above). The way TTS represents this internally
+-- though is as a "deck of one card", so we will need a unique deck ID per card...
+
+---@type number
+local currentDeckId = 0
+
+---@return number
+local function nextDeckId()
+    currentDeckId = currentDeckId + 1
+    return currentDeckId
+end
+
+-- We're just using this `CardUtils` table to group together methods pertaining to cards.
+local CardUtils = {}
+
+--- Creates a "custom card" state (data representation) corresponding to a card in our library.
+---@param card Card
+---@param position tts__VectorShape
+---@return tts__CardCustomState
+function CardUtils.cardState(card, position)
+    local deckId = nextDeckId() -- Grab a unique deck ID for our card.
+    return {
+        -- Name is not really a name, it's the *type* of TTS object.
+        Name = Object.Name.CardCustom,
+
+        -- Nickname on the other hand is the name displayed in TTS UI i.e. our card name.
+        Nickname = card.name,
+
+        -- Unfortunately, object states use a different transform/vector representation than the
+        -- TTS Vector class. ge_tts provides a helper to generate a transform state from vector
+        -- components though.
+        Transform = ObjectUtils.transformState({
+            position = position,
+            rotation = {0, 0, 0},
+            scale = {1, 1, 1},
+        }),
+
+        -- A card ID is a unique number per card "asset" in a mod. 100x the Deck ID + the card
+        -- number (starting at zero) within the deck.
+        CardID = deckId * 100,
+
+        -- We also need to describe to TTS how a deck (in this case card) ought to be displayed.
+        -- In this case, our card is part of a custom deck/
+        CustomDeck = {
+            -- Which custom deck?
+            [tostring(deckId)] = { -- Note: Although deckIds are numbers, they're stored as strings.
+                FaceURL = card.imageUrl, -- The image URL for our card.
+                BackURL = card.imageUrl, -- We're creating a double-sided card
+
+                NumWidth = 1, -- This is the number of columns in the deck image (1, it's just one card)
+                NumHeight = 1, -- This is the number of rows in the deck image (again 1)
+
+                BackIsHidden = true, -- Well use the back of the card when it's hidden... which ah, is the front of the card. So we won't be hiding it.
+                UniqueBack = false, -- Every card in this deck (just the one) has the same back.
+            }
+        }
+    }
+end
+
+return CardUtils

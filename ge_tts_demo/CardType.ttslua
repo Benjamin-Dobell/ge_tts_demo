@@ -1,0 +1,22 @@
+-- We're going to pretend our game has two types of cards, instances and spells.
+
+-- First we define an "alias", which just gives a human readable name to some other type.
+-- In this case, the type that's being named is a "union" of two possible string. Meaning
+-- a card type is either "instant" OR "spell".
+
+---@alias CardType "instant" | "spell"
+
+-- Next we define some constants. You could just use "instant" or "spell" everywhere in your code,
+-- but it's a good idea to use constants and only define strings once, then if you want to change
+-- them, there's only one place you need to worry about!
+
+-- The constants are placed in a table and given names...
+
+local CardType = {
+    INSTANT = "instant",
+    SPELL = "spell",
+}
+
+-- We return this table, so that other files can get access to these constants.
+
+return CardType

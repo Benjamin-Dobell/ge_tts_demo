@@ -1,0 +1,149 @@
+--
+-- This file is your entry-point, in Atom, you should load TTS scripts and replace the Global script
+-- with:
+--
+--     require('ge_tts_demo/Main')
+--
+-- There should be no other contents, we'll implement everything here.
+--
+
+local Logger = require('ge_tts/Logger')
+
+-- We're going to properly implement TTS saving using ge_tts's SaveManager.
+local SaveManager = require('ge_tts/SaveManager')
+
+-- In order to load and save, we need to serialize some data. Let's use ge_tts' JSON parser.
+-- TIP: It's much faster than the JSON implementation which comes with TTS.
+local Json = require('ge_tts/Json')
+
+-- We're going to be spawning objects. ge_tts provides important utilities to do so reliably
+local ObjectUtils = require('ge_tts/ObjectUtils')
+
+-- Also, we'll be making use of some general purposes table utilities.
+local TableUtils = require('ge_tts/TableUtils')
+
+
+-- Our game is simple, it just has two types of instances/objects cards and card drop zones
+local CardInstance = require('ge_tts_demo/CardInstance')
+local CardDropZone = require('ge_tts_demo/CardDropZone')
+
+local CardLibrary = require('ge_tts_demo/CardLibrary')
+local CardType = require('ge_tts_demo/CardType')
+local CardUtils = require('ge_tts_demo/CardUtils')
+
+
+-- The information we're going to save and load pertains to the cards and drop zones in our game.
+-- They each have their own saved state and know what to do with it, we're just going to save
+-- them, and leave the heavy lifting to each zone/instance.
+
+---@shape GameSavedState
+---@field cardInstances CardInstance_SavedState[]
+---@field cardDropZones CardDropZone_SavedState[]
+
+-- We're going to be creating cards, and drop zones for those cards. We're going to need to keep
+-- track of them, so we declare an array (a Lua table) for each.
+
+---@type CardInstance[]
+local cardInstances = {}
+
+---@type CardDropZone[]
+local cardDropZones = {}
+
+
+-- IMPORTANT: onLoad is a *local* function, NOT a global like TTS creates by default. Don't use a
+-- global (i.e. never omit local), if you do it'll break ge_tts!!!
+---@param state string
+local function onLoad(state)
+    -- On first load, savedState is going to be a blank string.
+    local isBlankSave = state == ''
+
+    if isBlankSave then
+        -- This is the mod's first load, let's set everything up...
+
+        -- First, we'll spawn two drop zones, one for each card type.
+        local instantDropZone = CardDropZone({-3, 0, 3}, {0, 0, 0}, {2.5, 5, 3}, CardType.INSTANT)
+        local spellDropZone = CardDropZone({3, 0, 3}, {0, 0, 0}, {2.5, 5, 3}, CardType.SPELL)
+
+        -- We also want to keep track of these drop zones beyond this function
+        table.insert(cardDropZones, instantDropZone)
+        table.insert(cardDropZones, spellDropZone)
+
+        -- Next, let's spawn our card objects.
+        for i, card in ipairs(CardLibrary) do
+            -- To spawn a card, we first need a card state. We're going to give each card a
+            -- unique position, all of which will be quite a distance from the table center.
+            local cardState = CardUtils.cardState(card, {-4 + i * 2, 5, -10})
+
+            -- TTS comes with some methods to spawn objects, however they all unfortunately suffer
+            -- from a fatal flaw. If an object happens to be mid-spawn when a save goes off, the
+            -- object *may* not be included in the save. ge_tts provides a solution, but you must
+            -- use its utility methods.
+
+            local cardObject = --[[---@type tts__Card]] ObjectUtils.safeSpawnObject(cardState)
+
+            -- We then want to create a card instance for this object. Instances are a ge_tts
+            -- abstraction that more closely resembles the concept of a physical card. Unlike, TTS
+            -- objects, instances are *not* destroyed when entering a container, instead they're
+            -- automatically updated to track the container until the object is removed from it.
+
+            local cardInstance = CardInstance(card, cardObject)
+
+            -- We'll keep track of all our instances
+            table.insert(cardInstances, cardInstance)
+
+            -- Let's drop the card in its corresponding drop zone, which will cause it
+            -- to fly into position after the mod loads.
+
+            local dropZone = card.type == CardType.SPELL and spellDropZone or instantDropZone
+            dropZone.drop(nil, --[[---@not nil]] cardInstance.getObject())
+        end
+    else
+        -- We're restoring from a save. The string is a JSON encoding of our saved state, decode it.
+        -- Additionally, we *know* the JSON represents our GameSavedState...
+        local savedState = --[[---@type GameSavedState]] Json.decode(state)
+
+        -- Alright, let's loop through the saved states for instances and zones, and reconstruct
+        -- them using their saved states.
+
+        for _, cardSavedState in ipairs(savedState.cardInstances) do
+            local instance = CardInstance(cardSavedState)
+            -- Keep track of the instance we just created
+            table.insert(cardInstances, instance)
+        end
+
+        for _, dropZoneSavedState in ipairs(savedState.cardDropZones) do
+            local zone = CardDropZone(dropZoneSavedState)
+            -- Keep track of the zone we just created
+            table.insert(cardDropZones, zone)
+        end
+    end
+end
+
+-- IMPORTANT: Again, a *local* function!!!
+--- @return string @We return a string, a JSON encoding of our saved state.
+local function onSave()
+    -- We need to save the state of each instance and zone in our mod, we're already keeping track
+    -- of them, so it's just a matter of getting the state for each one.
+    --
+    -- ge_tts TableUtils has a map function that makes this very straight forward.
+
+    ---@type GameSavedState
+    local savedState = {
+        cardInstances = TableUtils.map(cardInstances, function(cardInstance)
+            return cardInstance.save()
+        end),
+        cardDropZones = TableUtils.map(cardDropZones, function(cardDropZone)
+            return cardDropZone.save()
+        end),
+    }
+
+    -- TTS wants a string, so we JSON encode our saved state.
+    return Json.encode(savedState)
+end
+
+-- We then register our handlers using SaveManager. You'll note that the SaveManager takes a string
+-- as its first parameter. This is because ge_tts' SaveManager allows several independent
+-- self-contained pieces of code to subscribe to load and save events, and it automatically handles
+-- combining/splitting the save data between/amongst them.
+SaveManager.registerOnLoad('ge_tts_demo/Main', onLoad)
+SaveManager.registerOnSave('ge_tts_demo/Main', onSave)

@@ -1,0 +1,118 @@
+== ge_tts Demo Project
+
+This is an example demonstrating some basic features of
+https://github.com/Benjamin-Dobell/ge_tts[ge_tts], a library for
+developing Tabletop Simulator mods.
+
+=== Running the Demo
+
+You must use the official
+https://github.com/Berserk-Games/atom-tabletopsimulator-lua[Tabletop
+Simulator Atom] to run this mod. At the time of writing, it’s the only
+IDE that support `require()`, which is necessary to use ge_tts.
+
+==== Type Annotations
+
+Having said the above…
+
+Through-out this demo there are many comments that look like
+`---@shape <blah>`, `@field <blah>` `--[[---@type <blah>]]` and so on.
+These are special type annotations. They have _zero_ impact on how
+Tabletop Simulator runs your code. They’re just like regular comments
+except they provide useful hints to IDEs that support them. These hints
+allow IDEs to not just auto-complete Tabletop Simulator APIs, but also
+_your own APIs_.
+
+They also add static type safety to your project. Which basically means
+the IDE will catch (and highlight) common mistakes in your code in
+real-time as you write your code.
+
+_Unfortunately_, there’s presently also only one IDE that supports these
+annotations, and it’s not Atom.
+
+If you wish to use these type annotations (and they _are optional_) then
+you must install
+https://github.com/Benjamin-Dobell/IntelliJ-Luanalysis[Luanalysis],
+which is a Lua plugin Jetbrains IDEA, both of which are also free.
+
+However, if you want to use type annotations (which are great), then you
+must code in Luanalysis, but also have Atom so that you can push your
+game to Tabletop Simulator. Not ideal, however _for now_, this is the
+only solution.
+
+==== Where’s Steam Workshop link?
+
+There isn’t one.
+
+This demo is _all code_. Read on.
+
+==== Setup
+
+[arabic]
+. Install https://atom.io/[Atom].
+. Install the
+https://github.com/Berserk-Games/atom-tabletopsimulator-lua/wiki/Installation#basic-installation[Tabletop
+Simulator Atom plugin].
+. (Optional) Install https://www.jetbrains.com/idea/download[IntelliJ
+IDEA *Community* (Free) Edition].
+. (Optional) Install
+https://plugins.jetbrains.com/plugin/14698-luanalysis[Luanalysis].
+. Download the `ge_tts_demo_release.zip` (*not source code*) from
+https://github.com/Benjamin-Dobell/ge_tts_demo/releases[latest releases]
+of this example.
+. Extract its contents _directly_ into your Tabletop Simulator Atom
+`#include` directory, by default that’s
+`%HOME%\Documents\Tabletop Simulator`.
++
+*NOTE:* By directly I mean you should end up with multiple directories
+extracted. If you end up with a directory titled `ge_tts_demo_release`,
+open it and move its contents up one level.
+
+==== Getting Started
+
+[arabic]
+. Launch Atom.
+. Launch Tabletop Simulator.
+. Create a Single Player game in Tabletop Simulator. Dismiss the prompt
+when it asks you which mod to load.
+. Create a save game with this empty scene. Just call it `ge_tts_demo`.
+. Now, strangely enough, TTS and Atom don’t play nice with newly created
+saves. So we’re going to load the save we just created.
+. Open Atom, and from the menu chose `Packages` -> `Tabletop Simulator`
+-> `Get Lua Scripts`, press `Get Scripts` when prompted.
+. Replace the entire file contents of `Global.-1.ttslua` with just:
+
+[source,lua]
+----
+require('ge_tts_demo/Main')
+----
+
+[arabic, start=8]
+. From Atom’s menu chose `Packages` -> `Tabletop Simulator` ->
+`Save and Play`.
+
+_Ta-da!_
+
+You’re now playing world’s worst card game.
+
+There's no game mechanics, but you'll note the cards are separated into two
+piles, "Spells" and "Instants". If you try drag a card onto the other pile,
+it will be rejected.
+
+What if you try trick it? Create a deck to the side containing cards from
+both piles, then try drag it into the drop zone. Give it a go.
+
+_Phwoar!_ It _is_ magic.
+
+=== Editing
+
+If you installed Luanalysis, launch it, if not use Atom. In either case,
+simply choose `File` -> `Open` and navigate to
+`%HOME%\Documents\Tabletop Simulator`.
+
+=== Debugging
+
+_So ah... How do you feel about a third IDE?_
+
+Officially, Tabletop Simulator has no support for debugging. Unofficially
+there's https://github.com/tts-community/moonsharp[this].
