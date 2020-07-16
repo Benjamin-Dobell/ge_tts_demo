@@ -37,14 +37,14 @@ annotations, and it’s not Atom.
 If you wish to use these type annotations (and they _are optional_) then
 you must install
 https://github.com/Benjamin-Dobell/IntelliJ-Luanalysis[Luanalysis],
-which is a Lua plugin Jetbrains IDEA, both of which are also free.
+which is a Lua plugin for Jetbrains IDEA, both of which are also free.
 
-However, if you want to use type annotations (which are great), then you
+Therefore, if you want to use type annotations (which are great), you
 must code in Luanalysis, but also have Atom so that you can push your
 game to Tabletop Simulator. Not ideal, however _for now_, this is the
 only solution.
 
-=== Where’s Steam Workshop link?
+=== Where’s the Steam Workshop link?
 
 There isn’t one.
 
@@ -69,8 +69,8 @@ of this example.
 `%HOME%\Documents\Tabletop Simulator`.
 +
 *NOTE:* By directly I mean you should end up with multiple directories
-extracted. If you end up with a directory titled `ge_tts_demo_release`,
-open it and move its contents up one level.
+extracted. If you end up with a single directory titled
+`ge_tts_demo_release`, open it and move its contents up one level.
 
 === Getting Started
 
@@ -81,7 +81,7 @@ open it and move its contents up one level.
 when it asks you which mod to load.
 . Create a save game with this empty scene. Just call it `ge_tts_demo`.
 . Now, strangely enough, TTS and Atom don’t play nice with newly created
-saves. So we’re going to load the save we just created.
+saves. So please proceed to load the save you just created.
 . Open Atom, and from the menu chose `Packages` -> `Tabletop Simulator`
 -> `Get Lua Scripts`, press `Get Scripts` when prompted.
 . Replace the entire file contents of `Global.-1.ttslua` with just:
