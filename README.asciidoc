@@ -1,4 +1,4 @@
-== ge_tts Demo Project
+= ge_tts Demo Project
 :toc:
 :toc-placement!:
 
@@ -6,16 +6,16 @@ This is an example demonstrating some basic features of
 https://github.com/Benjamin-Dobell/ge_tts[ge_tts], a library for
 developing Tabletop Simulator mods.
 
-:toc-placement!:
+toc::[]
 
-=== Running the Demo
+== Running the Demo
 
 You must use the official
 https://github.com/Berserk-Games/atom-tabletopsimulator-lua[Tabletop
 Simulator Atom plugin] to run this mod. At the time of writing, it’s the
 only IDE that support `require()`, which is necessary to use ge_tts.
 
-==== Type Annotations
+=== Type Annotations
 
 Having said the above…
 
@@ -44,13 +44,13 @@ must code in Luanalysis, but also have Atom so that you can push your
 game to Tabletop Simulator. Not ideal, however _for now_, this is the
 only solution.
 
-==== Where’s Steam Workshop link?
+=== Where’s Steam Workshop link?
 
 There isn’t one.
 
 This demo is _all code_. Read on.
 
-==== Setup
+=== Setup
 
 [arabic]
 . Install https://atom.io/[Atom].
@@ -72,7 +72,7 @@ of this example.
 extracted. If you end up with a directory titled `ge_tts_demo_release`,
 open it and move its contents up one level.
 
-==== Getting Started
+=== Getting Started
 
 [arabic]
 . Launch Atom.
@@ -108,13 +108,13 @@ both piles, then try drag it into the drop zone. Give it a go.
 
 _Phwoar!_ It _is_ magic.
 
-=== Editing
+== Editing
 
 If you installed Luanalysis, launch it, if not use Atom. In either case,
 simply choose `File` -> `Open` and navigate to
 `%HOME%\Documents\Tabletop Simulator`.
 
-=== Debugging
+== Debugging
 
 _So ah... How do you feel about a third IDE?_
 
