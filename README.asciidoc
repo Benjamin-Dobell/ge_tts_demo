@@ -1,15 +1,19 @@
 == ge_tts Demo Project
+:toc:
+:toc-placement!:
 
 This is an example demonstrating some basic features of
 https://github.com/Benjamin-Dobell/ge_tts[ge_tts], a library for
 developing Tabletop Simulator mods.
 
+:toc-placement!:
+
 === Running the Demo
 
 You must use the official
 https://github.com/Berserk-Games/atom-tabletopsimulator-lua[Tabletop
-Simulator Atom] to run this mod. At the time of writing, it’s the only
-IDE that support `require()`, which is necessary to use ge_tts.
+Simulator Atom plugin] to run this mod. At the time of writing, it’s the
+only IDE that support `require()`, which is necessary to use ge_tts.
 
 ==== Type Annotations
 
