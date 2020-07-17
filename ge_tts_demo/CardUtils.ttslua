@@ -40,7 +40,7 @@ function CardUtils.cardState(card, position)
         -- components though.
         Transform = ObjectUtils.transformState({
             position = position,
-            rotation = {0, 0, 0},
+            rotation = {0, 180, 0},
             scale = {1, 1, 1},
         }),
 

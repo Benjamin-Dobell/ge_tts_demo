@@ -58,9 +58,10 @@ local function onLoad(state)
     if isBlankSave then
         -- This is the mod's first load, let's set everything up...
 
-        -- First, we'll spawn two drop zones, one for each card type.
-        local instantDropZone = CardDropZone({-3, 0, 3}, {0, 0, 0}, {2.5, 5, 3}, CardType.INSTANT)
-        local spellDropZone = CardDropZone({3, 0, 3}, {0, 0, 0}, {2.5, 5, 3}, CardType.SPELL)
+        -- First, we'll spawn two drop zones, one for each card type. The first three arguments are
+        -- vectors representing the zone's position, rotation and size, in that order.
+        local instantDropZone = CardDropZone({-3, 0, 3}, {0, 180, 0}, {2.5, 5, 3}, CardType.INSTANT)
+        local spellDropZone = CardDropZone({3, 0, 3}, {0, 180, 0}, {2.5, 5, 3}, CardType.SPELL)
 
         -- We also want to keep track of these drop zones beyond this function
         table.insert(cardDropZones, instantDropZone)
