@@ -139,7 +139,7 @@ the object in TTS.
 
 This mod has just one type of instance, a `CardInstance`. As the name would
 suggest, it represents a card. It has a reference to a TTS' object, which
-may be a TTS card object or a TT deck object, if the card is presently held
+may be a TTS card object or a deck object, if the card is presently held
 within a deck.
 
 ge_tts `Instance` class also provides some convenience methods that help you
