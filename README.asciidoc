@@ -20,7 +20,7 @@ only IDE that support `require()`, which is necessary to use ge_tts.
 Having said the above…
 
 Through-out this demo there are many comments that look like
-`---@shape <blah>`, `@field <blah>` `--[[---@type <blah>]]` and so on.
+`---@shape <blah>`, `---@field <blah>` `--[[---@type <blah>]]` and so on.
 These are special type annotations. They have _zero_ impact on how
 Tabletop Simulator runs your code. They’re just like regular comments
 except they provide useful hints to IDEs that support them. These hints
@@ -62,8 +62,7 @@ IDEA *Community* (Free) Edition].
 . (Optional) Install
 https://plugins.jetbrains.com/plugin/14698-luanalysis[Luanalysis].
 . Download the `ge_tts_demo_release.zip` (*not source code*) from
-https://github.com/Benjamin-Dobell/ge_tts_demo/releases[latest releases]
-of this example.
+https://github.com/Benjamin-Dobell/ge_tts_demo/releases[latest releases].
 . Extract its contents _directly_ into your Tabletop Simulator Atom
 `#include` directory, by default that’s
 `%HOME%\Documents\Tabletop Simulator`.
@@ -82,7 +81,7 @@ when it asks you which mod to load.
 . Create a save game with this empty scene. Just call it `ge_tts_demo`.
 . Now, strangely enough, TTS and Atom don’t play nice with newly created
 saves. So please proceed to load the save you just created.
-. Open Atom, and from the menu chose `Packages` -> `Tabletop Simulator`
+. Open Atom, and from the menu choose `Packages` -> `Tabletop Simulator`
 -> `Get Lua Scripts`, press `Get Scripts` when prompted.
 . Replace the entire file contents of `Global.-1.ttslua` with just:
 
@@ -92,7 +91,7 @@ require('ge_tts_demo/Main')
 ----
 
 [arabic, start=8]
-. From Atom’s menu chose `Packages` -> `Tabletop Simulator` ->
+. From Atom’s menu choose `Packages` -> `Tabletop Simulator` ->
 `Save and Play`.
 
 _Ta-da!_
@@ -122,7 +121,7 @@ start.
 === Zones
 
 ge_tts provides a Lua API for TTS' scripting triggers/zones that provides
-common functionality. For example ge_tts includes a `DropZone`, which
+common functionality. For example, ge_tts includes a `DropZone`, which
 behaves like a customizable snap point with a customizable size area to
 drop objects in.
 
@@ -145,12 +144,12 @@ within a deck.
 ge_tts `Instance` class also provides some convenience methods that help you
 interact with TTS objects. `reject()` is one such method that is used within
 this mod. `reject()` knows how to return an object to wherever it previously
-came from, it's previous zone, or if it has never been in a zone before,
+came from, its previous zone, or if it has never been in a zone before,
 where it was picked up from.
 
-Even if our `CardInstance` refers to a card is within a TTS deck, `reject()`
-will automatically pull it out of the deck if necessary, and just reject that
-individual card (not the entire deck).
+Even if our `CardInstance` refers to a card that is within a TTS deck,
+`reject()` will automatically pull it out of the deck if necessary, and just
+reject that individual card (not the entire deck).
 
 === Cards
 
