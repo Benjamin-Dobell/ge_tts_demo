@@ -2,69 +2,68 @@ local Instance = require('ge_tts/Instance')
 local TableUtils = require('ge_tts/TableUtils')
 
 --
--- Here we declare a Luanalysis sub class of ge_tts/Instance,
--- in the type system it is known as ge_tts__Instance. our
--- subclass is called CardInstance.
+-- Here we declare a Luanalysis sub class of ge_tts/Instance, in the type system it is known as
+-- ge_tts__Instance, our subclass is called CardInstance.
 --
--- In ge_tts, an Instance represents the concept of a game piece,
--- it's persistent unlike TTS objects, which are destroyed when
--- placed in a bag or deck. Instead, ge_tts instances continue to
--- exist, and you can even call its methods like instance.destroy()
--- whilst it's in a container; in which case ge_tts will remove it
--- from the container (and you should discard your reference to the
+-- NOTE: You *don't* need to use type definitions in your own project if you don't want to. Lua
+--       does not at all require this. It just helps as document and formalize our code.
+--
+-- In ge_tts, an Instance represents the concept of a game piece, it's persistent unlike TTS
+-- objects, which are destroyed when placed in a bag or deck. Instead, ge_tts instances continue to
+-- exist, and you can even call its methods like instance.destroy() whilst it's in a container. In
+-- which case ge_tts will remove it from the container (and you should discard your reference to the
 -- instance).
 --
 
 ---@class CardInstance : ge_tts__Instance
 
 --
--- Everything in TTS should be able to be saved and loaded
--- such that saved games and rewind work. Here we declare a
--- Luanalysis OF ge_tts__Instance_SavedState called
--- CardInstance_SavedState and you add any game specific
--- data associated with this card (in play).
+-- Everything in TTS should be able to be saved and loaded such that saved games and rewind work.
+-- Here we declare a Luanalysis type called CardInstance_SavedState, which inherits from ge_tts'
+-- ge_tts__Instance_SavedState. We add any game specific data associated with the instance, in this
+-- case it's the underlying card data from our card library.
 --
 
 ---@shape CardInstance_SavedState : ge_tts__Instance_SavedState
 ---@field card Card
 
 --
--- The game specific data we added is just a single field, which is the game's card data for this
--- card instance. Please refer to Card.ttslua
+-- In Lua, each file should return something. When you require a file, you gain access to whatever
+-- was returned. What we're going to do now is declare Luanalysis type information for what this
+-- file returns, a Lua table.
 --
-
+-- Within this file the table is stored in a local variable called CardInstance, however Luanalysis
+-- types are globally accessible across every file in your project, so we must ensure our types are
+-- given unique meaningful names. In this case, the name we've chosen is static_CardInstance. It's
+-- "static_" because what we return from this file is not a CardInstance, but rather the constructor
+-- that you can call in order to create a CardInstance.
 --
--- In Lua, each file should return something. When you require a file, you
--- gain access to whatever was returned. What we're doing to do now is
--- declare type information for what this file returns. Internally it's
--- a local variable called CardInstance, however the global type name
--- (which works in any file) is static_CardInstance. You're unlikely
--- to directly reference this type name, but you can if you wish.
--- It inherits from ge_tts__static_Instance for convenience, so all it's
--- static methods are accessible on CardInstance.
+-- static_CardInstance inherits from ge_tts__static_Instance, for convenience purposes. It's done
+-- so that any static fields/methods that belong to Instance are also accessible on CardInstance.
 --
--- CardInstance is a callable type (has overloads), it's a constructor which
--- creates a CardInstance (declared above). We've got three overloads,
--- but really that's up to you. In this case they are:
+-- Although static_CardInstance is a table, it's a *callable* table i.e. our constructor for
+-- creating CardInstance. So in Luanalysis speak we define "overloads" on the class, which indicates
+-- that this table can be called like a function. We've actually got three overloads as follows:
 --
--- 1. Accepts a card (your custom game data), and a TTS object (presumably a
---    TTS card).
+-- 1. Accepts a card (from our card library), as well as a a TTS object (presumably a TTS card).
 --
--- 2. A card, an *instance GUID*, and a TTS *container*. You use this constructor
---    when your card is in a deck. The GUID is the instance GUID (the GUID in the
---    deck), and the container is the deck.
---    NOTE: There are special instance GUID semantics, we'll get to those.
+-- 2. Accepts a card, an *instance GUID*, and a TTS *container* object. You'd use this constructor
+--    if your card is being created but is already within a deck. In which case the GUID is the
+--    instance GUID (the GUID of the card object in the deck), and the container is the deck itself.
 --
--- 3. Saved state.
---    ge_tts knows how to restore references to TTS objects in a save using this
---    saved state. In fact, when used correctly, ge_tts will automatically recover
---    objects that *should* exist in a save, but don't because a save occurred when
---    they were half-way through spawning!
---    Anyway, you call this constructor when restoring from a saved state. To
---    *obtain* this saved (in response to an onSave) you simply call instance.save(),
---    and it'll return a saved state that you must persist yourself (your own data
---    structure that you'll return from onSave - typically JSON).
+-- 3. Accepts a saved state.
+--    ge_tts instances know how to restore themselves from a saved state that they created. You use
+--    this constructor when your mod is loaded from a saved game. ge_tts will automatically recover
+--    a reference to the TTS object within the scene. In fact, when used correctly, ge_tts will even
+--    automatically recover objects that *should* exist in a save, but don't, due to a save
+--    occurring right when the objects were in the middle of spawning. An edge case to be sure, but
+--    ge_tts handles it.
 --
+--    Anyway, you call this constructor when restoring from a saved state (onLoad). To *obtain* this
+--    saved (in response to an onSave) you simply call instance.save(), and it'll return a saved
+--    state that you must persist yourself in onSave(). ge_tts/Main.ttslua does this already.
+--
+-- All three overloads return a CardInstance i.e. they construct a CardInstance.
 --
 
 ---@class static_CardInstance : ge_tts__static_Instance
@@ -77,7 +76,8 @@ local CardInstance = {}
 -- Each ge_tts instance should have a unique "instance type". Technically ge_tts
 -- doesn't even use this info itself, however it's useful for *you*. The following
 -- declaration is a convenience, whereby we expose that unique type on CardInstance
--- itself. You could just as easily compare strings "Card" all through-out your code.
+-- itself. You could easily use "Card" all through-out your code, but it's a good
+-- idea to define constants.
 --
 
 CardInstance.INSTANCE_TYPE = "Card"
@@ -149,9 +149,9 @@ setmetatable(CardInstance, TableUtils.merge(getmetatable(Instance), {
 
         ---@return CardInstance_SavedState
         function self.save()
-            -- We *must* merge our data with ge_tts__Instance, so we call through to the original
-            -- (super) save() method, and merge the data returned with our own data i.e. the card
-            -- data associated with this instance.
+            -- ge_tts__Instance (our super class) has its own data that it needs to save. So we call
+            -- through to the original (super) save() method, and merge its result with our own data
+            -- i.e. the card data (from our card library) associated with this instance.
 
             return --[[---@type CardInstance_SavedState]] TableUtils.merge(superSave(), {
                 card = card,
@@ -159,15 +159,16 @@ setmetatable(CardInstance, TableUtils.merge(getmetatable(Instance), {
         end
 
         if isSavedState then
-            -- If we're restoring from a saved state, we restore the card data from
-            -- the saved state.
+            -- If we're restoring from a saved state, we restore the card data from the saved state.
 
             local data = --[[---@type CardInstance_SavedState]] cardOrSavedState
             card = data.card
         else
-            -- If not, then we know this constructor was called with the necessary
-            -- card data, thus we cast it.
+            -- If not, then we know this constructor was called with the necessary card data, thus
+            -- we cast it: --[[---@type Card]]
             card = --[[---@type Card]] cardOrSavedState
+            -- Again, this cast business is just for the Luanalysis IDE, if you just want to use
+            -- Atom and don't care about static typing your code, you can omit these comments.
         end
 
         return self

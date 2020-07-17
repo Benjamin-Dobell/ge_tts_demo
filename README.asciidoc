@@ -108,7 +108,75 @@ both piles, then try drag it into the drop zone. Give it a go.
 
 _Phwoar!_ It _is_ magic.
 
-== Editing
+== Mod Overview
+
+The code is heavily documented and should do a good job of explaining
+what is being done, and why. So please do peruse it. However, what follows
+is a very quick overview of the mod's structure.
+
+=== Mod Entry-point (Main)
+
+The main Lua file is `ge_tts_demo\Main.ttslua`, and is a good place to
+start.
+
+=== Zones
+
+ge_tts provides a Lua API for TTS' scripting triggers/zones that provides
+common functionality. For example ge_tts includes a `DropZone`, which
+behaves like a customizable snap point with a customizable size area to
+drop objects in.
+
+This mod implements its own `CardDropZone`, which inherits all the behavior
+of a `DropZone`, but has added logic to only accept cards of a certain type,
+either "spell" or "instant" cards.
+
+=== Instances
+
+ge_tts has the concept of an "Instance". Unlike TTS objects, which are
+destroyed when entering a container, instances more closely resemble the
+concept of a real world game piece, and are only destroyed if you delete
+the object in TTS.
+
+This mod has just one type of instance, a `CardInstance`. As the name would
+suggest, it represents a card. It has a reference to a TTS' object, which
+may be a TTS card object or a TT deck object, if the card is presently held
+within a deck.
+
+ge_tts `Instance` class also provides some convenience methods that help you
+interact with TTS objects. `reject()` is one such method that is used within
+this mod. `reject()` knows how to return an object to wherever it previously
+came from, it's previous zone, or if it has never been in a zone before,
+where it was picked up from.
+
+Even if our `CardInstance` refers to a card is within a TTS deck, `reject()`
+will automatically pull it out of the deck if necessary, and just reject that
+individual card (not the entire deck).
+
+=== Cards
+
+This demo mod has an example data model demonstrating how you might represent
+a card library. If you prefer a different approach, that's just fine.
+
+=== Card Types
+
+As mentioned, we have just two types of cards in this example "spell" cards,
+and "instant" cards.
+
+=== Card Library
+
+As part of the mod we have a card library. There's just 5 cards in the demo.
+However, you could easily edit `ge_tts_demo\CardInstace.ttslua` and add
+additional cards to the library. If you do the mod will know what to do, and
+automatically create TTS objects representing those cards.
+
+=== Card Utilities
+
+The card utilities just exposes the one method, which creates a TTS "object
+state" (or "object data") corresponding with a card from our card library.
+An object state is what TTS uses to spawn a TTS object i.e. this mod
+includes all the code necessary to dynamically spawn cards.
+
+== Editing / Learning
 
 If you installed Luanalysis, launch it, if not use Atom. In either case,
 simply choose `File` -> `Open` and navigate to

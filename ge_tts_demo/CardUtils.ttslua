@@ -5,10 +5,10 @@ local ObjectUtils = require('ge_tts/ObjectUtils') -- ... and some utilities
 -- To do this we need to create a special representation of TTS card object that TTS knows how to
 -- spawn.
 
--- Traditionally, TTS expects you to use deck assets, multiple card images in one larger card,
--- sheet. However, you don't need to do this (many mods don't), so to keep things simple we're
--- just going to have one image per card (imageUrl above). The way TTS represents this internally
--- though is as a "deck of one card", so we will need a unique deck ID per card...
+-- Traditionally, TTS expects you to use deck assets, multiple card images in one larger card
+-- sheet image. However, you don't need to do this (many mods don't), so to keep things simple
+-- we're just going to have one image per card. However, the way TTS represents this internally
+-- is as a "deck of one card", so we will still need a unique deck ID per card...
 
 ---@type number
 local currentDeckId = 0
@@ -59,7 +59,7 @@ function CardUtils.cardState(card, position)
                 NumWidth = 1, -- This is the number of columns in the deck image (1, it's just one card)
                 NumHeight = 1, -- This is the number of rows in the deck image (again 1)
 
-                BackIsHidden = true, -- Well use the back of the card when it's hidden... which ah, is the front of the card. So we won't be hiding it.
+                BackIsHidden = true, -- We'll use the back of the card when it's hidden... which ah, is the front of the card. So we won't be hiding it.
                 UniqueBack = false, -- Every card in this deck (just the one) has the same back.
             }
         }

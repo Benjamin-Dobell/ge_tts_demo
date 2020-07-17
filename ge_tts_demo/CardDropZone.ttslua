@@ -12,14 +12,14 @@ local CardInstance = require('ge_tts_demo/CardInstance')
 
 ---@class CardDropZone : ge_tts__DropZone
 
--- As always, everything in our mod needs to know how to save and restore itself. Here we define
--- what our saved state looks like. It has all the fields from DropZone (inheritance) and one
--- additional field for which type of card this drop zone accepts.
+-- As always, everything in our mod needs to know how to save and restore itself from a TTS save.
+-- Here we declare what the saved state for a CardDropZone looks like. It inherits fields from
+-- DropZone and then adds one additional field of its on; which type of card this drop zone accepts.
 
 ---@shape CardDropZone_SavedState : ge_tts__DropZone_SavedState
 ---@field cardType CardType
 
--- Please refer to CardInstance for more details about how we inherit and overloads. However, in
+-- Please refer to CardInstance for more details about how we inherit and what overloads are. In
 -- this case we declare an overload (constructor) that specifies the position, rotation and size
 -- (scale) of the drop zone, and also the aforementioned "card type" for the zone being created.
 
@@ -35,11 +35,12 @@ CardDropZone.ZONE_TYPE = "Card Drop Zone"
 
 
 -- Our card drop zone is going to only allow cards of a matching card type, that means in addition
--- to handling individual cards, we need to know how to pull a part a deck and reject individual
--- cards within it which aren't allowed...
+-- to handling individual cards, we need to know how to pull apart a deck and reject individual
+-- cards within it which aren't allowed.
 
 --- Takes an array of ge_tts Instances, and the card type which is allowed. If any instances are
---- not allowed, they're pulled out of their container, and
+--- not allowed, they're rejected i.e. pulled out of their container, and sent back to their
+--- previous zone.
 ---@param instances ge_tts__Instance[]
 ---@param validCardType CardType
 local function rejectInvalidInstances(instances, validCardType)
@@ -75,7 +76,7 @@ setmetatable(CardDropZone, TableUtils.merge(getmetatable(DropZone), {
         ---@type CardType
         local cardType
 
-        -- We *must* implement getZoneType() and return our unique zone type.
+        -- Next we override (replace the super class') getZoneType(), and return our zone type.
 
         function self.getZoneType()
             return CardDropZone.ZONE_TYPE
@@ -87,7 +88,7 @@ setmetatable(CardDropZone, TableUtils.merge(getmetatable(DropZone), {
             return cardType
         end
 
-        -- Refer to CardInstance.ttslua for more details about self.save()
+        -- Please refer to CardInstance.ttslua for more details about self.save()
 
         local superSave = self.save
 
@@ -103,7 +104,7 @@ setmetatable(CardDropZone, TableUtils.merge(getmetatable(DropZone), {
 
         local superFilterObject = self.filterObject
 
-        --- Called when a player attempts to drop and object within this zone. The return value
+        --- Called when a player attempts to drop an object within this zone. The return value
         --- indicates whether the zone wishes to accept, reject or ignore the object being dropped.
         ---@param colorName tts__PlayerColor @Color of the TTS player that dropped the TTS object.
         ---@param object tts__Object
@@ -120,9 +121,9 @@ setmetatable(CardDropZone, TableUtils.merge(getmetatable(DropZone), {
                 return filterResult
             end
 
-            -- This callback is called with an object, we want to see if there are any CardInstance
-            -- associated with the object being dropped. If it's a single card, there'll be just the
-            -- one, but if it's a deck being dropped, there'll be several.
+            -- We want to see if there are any CardInstance associated with the object being dropped.
+            -- If it's a single card, there'll be just the one, but if it's a deck being dropped,
+            -- there'll be several instances associated with the one object (deck).
             local instances = Instance.getInstances(object)
 
             if #instances == 0 then
@@ -130,10 +131,12 @@ setmetatable(CardDropZone, TableUtils.merge(getmetatable(DropZone), {
                 -- about. We could handle this a number of ways, but we're simply going to ignore the
                 -- object, it won't be "sucked up" by this drop zone, but may proceed to fall.
                 --
-                -- There is an important distinction between ignoring and rejecting an object.
-                -- Specfically, sometimes objects may be dropped whilst intersecting multiple zones.
-                -- When this occurs, ge_tts will try the closest intersecting zone first, if it
-                -- ignores the object, it knows to try the next closest intersecting zone and so on.
+                -- There are some important distinctions between ignoring and rejecting an object.
+                -- Sometimes objects may be dropped whilst intersecting multiple zones. When this
+                -- occurs, ge_tts will try the closest intersecting zone first, if it ignores the
+                -- object, ge_tts' knows to try the next closest intersecting zone and so on.
+                -- However, if you accept *or reject* the object, ge_tts won't give other
+                -- intersecting zone the opportunity to deal with the object.
                 return CardDropZone.FilterResult.IGNORE
             end
 
@@ -142,14 +145,14 @@ setmetatable(CardDropZone, TableUtils.merge(getmetatable(DropZone), {
 
             for _, instance in ipairs(instances) do
                 if (--[[---@not nil]] instance).getInstanceType() == CardInstance.INSTANCE_TYPE then
-                    -- Great it's an instance *and* we know it's a CardInstance
+                    -- Great it's an instance *and* we now know it's a CardInstance
 
                     local cardInstance = --[[---@type CardInstance]] instance
 
                     -- Let's see if it's the right card type.
 
                     if cardInstance.getCard().type == cardType then
-                        -- It is, great! Let's accept the object.
+                        -- It is! Let's accept the object.
                         return CardDropZone.FilterResult.ACCEPT
                     end
                 end
@@ -168,18 +171,18 @@ setmetatable(CardDropZone, TableUtils.merge(getmetatable(DropZone), {
         local superOnDrop = self.onDrop
 
         --- Called when a TTS object is being dropped within this DropZone i.e. the object was
-        --- accepts by filterObject.
+        --- accepted by filterObject.
         ---@param colorName nil|tts__PlayerColor @Color of the TTS player that dropped the TTS object.
         ---@param object tts__Object @The object that was dropped.
         function self.onDrop(colorName, object)
-            -- If you were paying close attention to our filterObject implementation, you mya have
+            -- If you were paying close attention to our filterObject implementation, you may have
             -- noticed that we chose to accept any object with at least one card instance of the
             -- correct card type. If a deck was dropped and it also contained cards of the wrong
             -- card type, we use our convenience method to reject those individual cards.
             rejectInvalidInstances(Instance.getInstances(object), cardType)
 
             -- Finally, we're going to call through to the super implementation of onDrop. In the case
-            -- of a drop zone, by default, onDrop will smoothly move the object to center of the
+            -- of a drop zone, by default, onDrop will smoothly move the object to the center of the
             -- zone and correctly orient it.
             superOnDrop(colorName, object)
         end

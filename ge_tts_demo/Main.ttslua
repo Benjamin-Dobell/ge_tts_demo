@@ -7,8 +7,6 @@
 -- There should be no other contents, we'll implement everything here.
 --
 
-local Logger = require('ge_tts/Logger')
-
 -- We're going to properly implement TTS saving using ge_tts's SaveManager.
 local SaveManager = require('ge_tts/SaveManager')
 
