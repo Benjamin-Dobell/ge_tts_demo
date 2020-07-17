@@ -157,19 +157,19 @@ individual card (not the entire deck).
 This demo mod has an example data model demonstrating how you might represent
 a card library. If you prefer a different approach, that's just fine.
 
-=== Card Types
+==== Card Types
 
 As mentioned, we have just two types of cards in this example "spell" cards,
 and "instant" cards.
 
-=== Card Library
+==== Card Library
 
 As part of the mod we have a card library. There's just 5 cards in the demo.
 However, you could easily edit `ge_tts_demo\CardInstace.ttslua` and add
 additional cards to the library. If you do the mod will know what to do, and
 automatically create TTS objects representing those cards.
 
-=== Card Utilities
+==== Card Utilities
 
 The card utilities just exposes the one method, which creates a TTS "object
 state" (or "object data") corresponding with a card from our card library.
