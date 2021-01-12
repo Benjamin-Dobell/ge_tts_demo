@@ -10,10 +10,17 @@ toc::[]
 
 == Running the Demo
 
-You must use the official
+To run this demo, you need a TTS IDE that supports `require()`. It's
+suggested you use the official
 https://github.com/Berserk-Games/atom-tabletopsimulator-lua[Tabletop
-Simulator Atom plugin] to run this mod. At the time of writing, it’s the
-only IDE that support `require()`, which is necessary to use ge_tts.
+Simulator Atom plugin] to run this mod.
+
+[TIP]
+====
+Alternatively, you may use
+https://github.com/rolandostar/tabletopsimulator-lua-vscode[@rolandostar's
+Visual Studio Code plugin].
+====
 
 === Type Annotations
 
