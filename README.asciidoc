@@ -87,7 +87,7 @@ saves. So please proceed to load the save you just created.
 
 [source,lua]
 ----
-require('ge_tts_demo/Main')
+require('ge_tts_demo.Main')
 ----
 
 [arabic, start=8]

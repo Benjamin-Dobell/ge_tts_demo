@@ -1,5 +1,5 @@
-local Instance = require('ge_tts/Instance')
-local TableUtils = require('ge_tts/TableUtils')
+local Instance = require('ge_tts.Instance')
+local TableUtils = require('ge_tts.TableUtils')
 
 --
 -- Here we declare a Luanalysis sub class of ge_tts/Instance, in the type system it is known as
@@ -124,10 +124,10 @@ setmetatable(CardInstance, TableUtils.merge(getmetatable(Instance), {
         local card
 
         -- Seems as we want each type of instant to have its own type, we *must* implement a method
-        -- called getInstanceType(). It takes no parameters, and returns the instance type.
+        -- called getType(). It takes no parameters, and returns the instance type.
 
         ---@return string
-        function self.getInstanceType()
+        function self.getType()
             return CardInstance.INSTANCE_TYPE
         end
 

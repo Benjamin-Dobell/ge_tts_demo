@@ -2,32 +2,32 @@
 -- This file is your entry-point, in Atom, you should load TTS scripts and replace the Global script
 -- with:
 --
---     require('ge_tts_demo/Main')
+--     require('ge_tts_demo.Main')
 --
 -- There should be no other contents, we'll implement everything here.
 --
 
 -- We're going to properly implement TTS saving using ge_tts's SaveManager.
-local SaveManager = require('ge_tts/SaveManager')
+local SaveManager = require('ge_tts.SaveManager')
 
 -- In order to load and save, we need to serialize some data. Let's use ge_tts' JSON parser.
 -- TIP: It's much faster than the JSON implementation which comes with TTS.
-local Json = require('ge_tts/Json')
+local Json = require('ge_tts.Json')
 
 -- We're going to be spawning objects. ge_tts provides important utilities to do so reliably
-local ObjectUtils = require('ge_tts/ObjectUtils')
+local ObjectUtils = require('ge_tts.ObjectUtils')
 
 -- Also, we'll be making use of some general purposes table utilities.
-local TableUtils = require('ge_tts/TableUtils')
+local TableUtils = require('ge_tts.TableUtils')
 
 
 -- Our game is simple, it just has two types of instances/objects cards and card drop zones
-local CardInstance = require('ge_tts_demo/CardInstance')
-local CardDropZone = require('ge_tts_demo/CardDropZone')
+local CardInstance = require('ge_tts_demo.CardInstance')
+local CardDropZone = require('ge_tts_demo.CardDropZone')
 
-local CardLibrary = require('ge_tts_demo/CardLibrary')
-local CardType = require('ge_tts_demo/CardType')
-local CardUtils = require('ge_tts_demo/CardUtils')
+local CardLibrary = require('ge_tts_demo.CardLibrary')
+local CardType = require('ge_tts_demo.CardType')
+local CardUtils = require('ge_tts_demo.CardUtils')
 
 
 -- The information we're going to save and load pertains to the cards and drop zones in our game.

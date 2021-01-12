@@ -1,5 +1,5 @@
 -- Here we require our card type constants (CardType.ttslua), so we can use them in this file.
-local CardType = require('ge_tts_demo/CardType')
+local CardType = require('ge_tts_demo.CardType')
 
 --
 -- This is example Card data type. We're using a @shape which means it's just a plain

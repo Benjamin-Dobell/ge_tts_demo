@@ -1,8 +1,8 @@
-local DropZone = require('ge_tts/DropZone')
-local Instance = require('ge_tts/Instance')
-local TableUtils = require('ge_tts/TableUtils')
+local DropZone = require('ge_tts.DropZone')
+local Instance = require('ge_tts.Instance')
+local TableUtils = require('ge_tts.TableUtils')
 
-local CardInstance = require('ge_tts_demo/CardInstance')
+local CardInstance = require('ge_tts_demo.CardInstance')
 
 -- We're going to have two drop zones, one that accepts spells, and one that accepts instants.
 -- However, because that's the only difference, we can implement them as just the one class.
@@ -47,7 +47,7 @@ local function rejectInvalidInstances(instances, validCardType)
     for _, instance in ipairs(instances) do
         -- If the instance is not a card instance, or if it's a card instance of the wrong type
         -- then we want to reject it.
-        if (--[[---@not nil]] instance).getInstanceType() ~= CardInstance.INSTANCE_TYPE
+        if (--[[---@not nil]] instance).getType() ~= CardInstance.INSTANCE_TYPE
             or (--[[---@type CardInstance]] instance).getCard().type ~= validCardType
         then
             -- ge_tts' Instance class has a convenience function that makes it really easy to reject
@@ -144,7 +144,7 @@ setmetatable(CardDropZone, TableUtils.merge(getmetatable(DropZone), {
             -- look through them to see if there's any cards of the right card type.
 
             for _, instance in ipairs(instances) do
-                if (--[[---@not nil]] instance).getInstanceType() == CardInstance.INSTANCE_TYPE then
+                if (--[[---@not nil]] instance).getType() == CardInstance.INSTANCE_TYPE then
                     -- Great it's an instance *and* we now know it's a CardInstance
 
                     local cardInstance = --[[---@type CardInstance]] instance
